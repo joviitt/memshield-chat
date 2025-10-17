@@ -14,16 +14,17 @@ def handle_message(msg):
     print("Message received from client:", msg)
     emit('message', msg, broadcast=True)
 
-# Function to read from terminal and broadcast
+# Background task to read input and broadcast
 def backend_input():
     while True:
         msg = input("Enter backend message: ")
-        socketio.emit('message', f"Backend: {msg}", broadcast=True)
+        socketio.emit('message', f"Backend: {msg}", namespace='/', to=None)
 
 if __name__ == '__main__':
-    # Run the input thread alongside Flask
+    # Start input thread
     thread = threading.Thread(target=backend_input)
     thread.daemon = True
     thread.start()
 
+    # Run SocketIO server
     socketio.run(app, host='0.0.0.0', port=5000)
